@@ -9,8 +9,8 @@ import (
 
 type Info struct {
 	WorkerCount int
-	Inf Inform
-	UserList []string
+	Inf         Inform
+	UserList    []string
 	GettingData GetData
 }
 
@@ -19,31 +19,49 @@ type DataType struct {
 }
 
 type GetData interface {
-	Parse(contents []byte)
-	DisplayData()string
+	Parse(contents []byte) bool
+	DisplayData() string
 }
 
 type receiveInfo struct {
-	data string
+	data     string
 	receiver string
 }
 
-func (e Info)worker(id int, jobs <-chan receiveInfo,wg *sync.WaitGroup){
+func (e Info) worker(id int, jobs <-chan receiveInfo, wg *sync.WaitGroup) {
 
 	for {
 		for j := range jobs {
-			fmt.Println("worker ", id, "processing job ", j)
-			time.Sleep(time.Second)
 			e.Inf.Inform(j.data, j.receiver)
 			wg.Done()
 		}
 	}
 }
 
+func (e Info) Run(seeds Request) {
 
-func(e Info)Run(seeds Request) {
+	jobs := make(chan receiveInfo, 10)
 
-	jobs := make(chan receiveInfo, 100)
+	//获取天气数据
+	body, err := fetcher.Fetch(seeds.Url)
+
+	if err != nil {
+		fmt.Println("fetcher data err")
+		e.Inf.Inform("获取天气数据错误，请立刻查看错误", "337612001@qq.com")
+		return
+	} else {
+		fmt.Println("fetcher data normal")
+		//解析天气数据
+		if e.GettingData.Parse(body) {
+			fmt.Println("Parse data normal")
+		} else {
+			fmt.Println("Parse data err")
+			e.Inf.Inform("解析天气数据错误，请立刻查看错误", "337612001@qq.com")
+			return
+		}
+	}
+
+	sendBuf := e.GettingData.DisplayData()
 
 	var wg sync.WaitGroup
 	//开启通知线程
@@ -51,17 +69,7 @@ func(e Info)Run(seeds Request) {
 		go e.worker(w, jobs, &wg)
 	}
 
-	body, err := fetcher.Fetch(seeds.Url)
-
-	//var result= WeatherInfo{}
-	if err != nil {
-		fmt.Println("err")
-	} else {
-		fmt.Println("no err")
-		e.GettingData.Parse(body)
-	}
-
-	sendBuf := e.GettingData.DisplayData()
+	time.Sleep(time.Second)
 
 	//通知用户
 	for j := 0; j < len(e.UserList); j++ {

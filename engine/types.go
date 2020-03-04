@@ -1,15 +1,11 @@
 package engine
 
-//type Parser interface {
-//	Parse([]byte) WeatherInfo
-//}
-
 type Inform interface {
-	Inform(string,string) bool
+	Inform(string, string) bool
 }
 
 type Request struct {
-	Url    string
+	Url string
 }
 
 type Display interface {

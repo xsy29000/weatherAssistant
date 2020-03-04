@@ -5,107 +5,79 @@ import (
 	"fmt"
 )
 
-func (p *HeFWeather) Parse(contents []byte) {
+func (p *HeFWeather) Parse(contents []byte) bool {
 	var returnData WeatherInfo
-
-	fmt.Println("parse -------- >>>>>>>>  ", string(contents))
 
 	m := make(map[string]interface{})
 	json.Unmarshal(contents, &m)
 
-	for key, value := range m {
-		switch data := value.(type) {
-		case []interface{}:
-			fmt.Printf("map[%s]的值类型为[]interface, value = %T\n", key, data)
-			for _, u := range data {
-				fmt.Printf("map[%T]的值类型\n", u)
-				m1 := make(map[string]interface{})
-				m1 = u.(map[string]interface{})
+	if value, ok := m["HeWeather6"]; ok {
+		if len(value.([]interface{})) == 0 {
+			return false
+		}
+		u := value.([]interface{})[0]
+		if value1, ok := u.(map[string]interface{})["lifestyle"]; ok {
+			if len(value1.([]interface{})) == 0 {
+				return false
+			}
+			for i := range value1.([]interface{}) {
+				value2 := make(map[string]interface{})
+				value2 = value1.([]interface{})[i].(map[string]interface{})
+				if vvv, ok := value2["type"]; vvv == "comf" && ok {
+					fmt.Println(value2["txt"])
+					returnData.Comfort.Txt = value2["txt"].(string)
+					returnData.Comfort.Brf = value2["brf"].(string)
+				}
 
-				for _, value := range m1 {
-					switch value.(type) {
-					case []interface{}:
-						for key, value = range m1 {
-							//fmt.Printf("map2[%s %T]的值类型\n", key, value)
-							switch data2 := value.(type) {
-							case []interface{}:
-								fmt.Printf("value2 = %v\n", data2)
-								for _, j := range data2 {
-									//fmt.Printf("mmll %T %T\n",i,j)
-									m2 := make(map[string]interface{})
-									m2 = j.(map[string]interface{})
-									if vvv,ok := m2["type"]; vvv == "comf" &&ok{
-										fmt.Println(m2["txt"])
-										returnData.Comfort.Txt = m2["txt"].(string)
-										returnData.Comfort.Brf = m2["brf"].(string)
-									}
+				if vvv, ok := value2["type"]; vvv == "drsg" && ok {
+					fmt.Println(value2["txt"])
+					returnData.DressIndex.Txt = value2["txt"].(string)
+					returnData.DressIndex.Brf = value2["brf"].(string)
+				}
 
-									if vvv,ok := m2["type"]; vvv == "drsg" &&ok{
-										fmt.Println(m2["txt"])
-										returnData.DressIndex.Txt = m2["txt"].(string)
-										returnData.DressIndex.Brf = m2["brf"].(string)
-									}
+				if vvv, ok := value2["type"]; vvv == "flu" && ok {
+					fmt.Println(value2["txt"])
+					returnData.ColdIndex.Txt = value2["txt"].(string)
+					returnData.ColdIndex.Brf = value2["brf"].(string)
+				}
 
-									if vvv,ok := m2["type"]; vvv == "flu" &&ok{
-										fmt.Println(m2["txt"])
-										returnData.ColdIndex.Txt = m2["txt"].(string)
-										returnData.ColdIndex.Brf = m2["brf"].(string)
-									}
+				if vvv, ok := value2["type"]; vvv == "sport" && ok {
+					fmt.Println(value2["txt"])
+					returnData.Sport.Txt = value2["txt"].(string)
+					returnData.Sport.Brf = value2["brf"].(string)
+				}
 
-									if vvv,ok := m2["type"]; vvv == "sport" &&ok{
-										fmt.Println(m2["txt"])
-										returnData.Sport.Txt = m2["txt"].(string)
-										returnData.Sport.Brf = m2["brf"].(string)
-									}
+				if vvv, ok := value2["type"]; vvv == "trav" && ok {
+					fmt.Println(value2["txt"])
+					returnData.Travel.Txt = value2["txt"].(string)
+					returnData.Travel.Brf = value2["brf"].(string)
+				}
 
-									if vvv,ok := m2["type"]; vvv == "trav" &&ok{
-										fmt.Println(m2["txt"])
-										returnData.Travel.Txt = m2["txt"].(string)
-										returnData.Travel.Brf = m2["brf"].(string)
-									}
+				if vvv, ok := value2["type"]; vvv == "uv" && ok {
+					fmt.Println(value2["txt"])
+					returnData.Uv.Txt = value2["txt"].(string)
+					returnData.Uv.Brf = value2["brf"].(string)
+				}
 
-									if vvv,ok := m2["type"]; vvv == "uv" &&ok{
-										fmt.Println(m2["txt"])
-										returnData.Uv.Txt = m2["txt"].(string)
-										returnData.Uv.Brf = m2["brf"].(string)
-									}
+				if vvv, ok := value2["type"]; vvv == "cw" && ok {
+					fmt.Println(value2["txt"])
+					returnData.WashCarIndex.Txt = value2["txt"].(string)
+					returnData.WashCarIndex.Brf = value2["brf"].(string)
+				}
 
-									if vvv,ok := m2["type"]; vvv == "cw" &&ok{
-										fmt.Println(m2["txt"])
-										returnData.WashCarIndex.Txt = m2["txt"].(string)
-										returnData.WashCarIndex.Brf = m2["brf"].(string)
-									}
-
-									if vvv,ok := m2["type"]; vvv == "air" &&ok{
-										fmt.Println(m2["txt"])
-										returnData.AirPollution.Txt = m2["txt"].(string)
-										returnData.AirPollution.Brf = m2["brf"].(string)
-									}
-
-									//for k,v := range m2{
-									//	fmt.Printf("result %T %T\n",k,v)
-									//	if k == "type" && v == "comf"{
-									//		fmt.Println("comf")
-									//
-									//	}
-									//}
-
-								}
-							}
-						}
-
-					}
-					//m2 := make(map[string]interface{})
-					//m2 = m1[3].(map[string]interface{})
+				if vvv, ok := value2["type"]; vvv == "air" && ok {
+					fmt.Println(value2["txt"])
+					returnData.AirPollution.Txt = value2["txt"].(string)
+					returnData.AirPollution.Brf = value2["brf"].(string)
 				}
 			}
-
+		} else {
+			return false
 		}
-		//m1 = data
-
+	} else {
+		return false
 	}
 
-
 	p.WeatherData = returnData
-	//return returnData
+	return true
 }

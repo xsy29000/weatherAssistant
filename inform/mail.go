@@ -9,8 +9,8 @@ import (
 type Mail struct {
 }
 
-func (mail Mail)Inform(data string,receiver string) bool{
-	fmt.Println("dd ",data,"ret ",receiver)
+func (mail Mail) Inform(data string, receiver string) bool {
+	fmt.Println("data-> ", data, "receiver-> ", receiver)
 
 	m := gomail.NewMessage()
 
@@ -18,10 +18,9 @@ func (mail Mail)Inform(data string,receiver string) bool{
 
 	m.SetHeader("To", m.FormatAddress(receiver, "User")) // 收件人
 
-	m.SetHeader("Subject", "生活指数")     // 主题
+	m.SetHeader("Subject", "生活指数") // 主题
 
 	m.SetBody("text/html", data)
-
 
 	d := gomail.NewDialer("smtp.qq.com", 465, "337612001@qq.com", "") // 发送邮件服务器、端口、发件人账号、发件人密码
 
@@ -30,8 +29,7 @@ func (mail Mail)Inform(data string,receiver string) bool{
 		return false
 	}
 
-	log.Println("done.发送成功")
-
+	log.Println(receiver, "----->>>>> done.发送成功")
 
 	return true
 }
