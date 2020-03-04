@@ -11,6 +11,7 @@ import (
 
 func main() {
 
+	//定時任務
 	c := cron.New()
 	spec := "0 43 17 * * ?"
 	c.AddFunc(spec, func() {
@@ -32,7 +33,7 @@ func main() {
 		}
 
 		e.Run(engine.Request{
-			Url: "https://free-api.heweather.net/s6/weather/lifestyle?location=guangzhou&key=26e6e05426344f8da738eb82bd30e574",
+			Url: "https://free-api.heweather.net/s6/weather/lifestyle?location=guangzhou&key=*",
 		})
 	})
 
