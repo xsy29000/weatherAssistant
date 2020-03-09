@@ -6,7 +6,13 @@ import (
 	"log"
 )
 
+type MailIniStr struct {
+	Sender         string
+	SenderPassword string
+}
+
 type Mail struct {
+	MailIni MailIniStr
 }
 
 func (mail Mail) Inform(data string, receiver string) bool {
@@ -14,7 +20,7 @@ func (mail Mail) Inform(data string, receiver string) bool {
 
 	m := gomail.NewMessage()
 
-	m.SetAddressHeader("From", "337612001@qq.com" /*"发件人地址"*/, "天气之子") // 发件人
+	m.SetAddressHeader("From", mail.MailIni.Sender /*"发件人地址"*/, "天气之子") // 发件人
 
 	m.SetHeader("To", m.FormatAddress(receiver, "User")) // 收件人
 
@@ -22,7 +28,7 @@ func (mail Mail) Inform(data string, receiver string) bool {
 
 	m.SetBody("text/html", data)
 
-	d := gomail.NewDialer("smtp.qq.com", 465, "337612001@qq.com", "") // 发送邮件服务器、端口、发件人账号、发件人密码
+	d := gomail.NewDialer("smtp.qq.com", 465, mail.MailIni.Sender, mail.MailIni.SenderPassword) // 发送邮件服务器、端口、发件人账号、发件人密码
 
 	if err := d.DialAndSend(m); err != nil {
 		log.Println("发送失败", err)
