@@ -9,7 +9,7 @@ func (p HeFWeather) DisplayData() string {
 	data += stringJoint("舒适度: ", p.WeatherData.Comfort.Txt)
 	data += stringJoint("穿衣指数: ", p.WeatherData.DressIndex.Txt)
 	data += stringJoint("感冒指数: ", p.WeatherData.ColdIndex.Txt)
-	data += stringJoint("旅游指数: ", p.WeatherData.Sport.Txt)
+	data += stringJoint("运动指数: ", p.WeatherData.Sport.Txt)
 	data += stringJoint("旅游指数: ", p.WeatherData.Travel.Txt)
 	data += stringJoint("紫外线指数: ", p.WeatherData.Uv.Txt)
 	data += stringJoint("洗车指数: ", p.WeatherData.WashCarIndex.Txt)
